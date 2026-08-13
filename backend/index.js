@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const db = require('./db');
+const { classifyGrievance } = require('./aiChain');
 
 const app = express();
 app.use(cors());
@@ -111,21 +112,46 @@ app.post('/api/login', async (req, res) => {
 
 // --- GRIEVANCE CRUD ROUTES ---
 
-// 3. POST /api/grievances - Create new grievance
-app.post('/api/grievances', authenticateToken, async (req, res) => {
-  const { category, description, urgency } = req.body;
+// 2.5 POST /api/classify - Classify grievance description using LLM or local fallback
+app.post('/api/classify', authenticateToken, async (req, res) => {
+  const { description } = req.body;
+  if (!description) {
+    return res.status(400).json({ error: 'Description is required.' });
+  }
+  try {
+    const aiTags = await classifyGrievance(description);
+    res.json(aiTags);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to classify description', details: error.message });
+  }
+});
 
-  if (!category || !description) {
-    return res.status(400).json({ error: 'Category and description are required.' });
+// 3. POST /api/grievances - Create new grievance with Auto-Tagging
+app.post('/api/grievances', authenticateToken, async (req, res) => {
+  let { category, description, urgency } = req.body;
+
+  if (!description) {
+    return res.status(400).json({ error: 'Description is required.' });
   }
 
   try {
+    // Auto-tag missing category or urgency using LangChain
+    if (!category || !urgency) {
+      const aiTags = await classifyGrievance(description);
+      category = category || aiTags.category;
+      urgency = urgency || aiTags.urgency;
+    }
+
     const [result] = await db.query(
       'INSERT INTO grievances (user_id, category, description, urgency) VALUES (?, ?, ?, ?)',
-      [req.user.id, category, description, urgency || 'Low']
+      [req.user.id, category, description, urgency]
     );
 
-    res.status(201).json({ message: 'Grievance submitted successfully.', grievanceId: result.insertId });
+    res.status(201).json({
+      message: 'Grievance submitted successfully.',
+      grievanceId: result.insertId,
+      autoTagged: { category, urgency }
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to submit grievance', details: error.message });
   }
