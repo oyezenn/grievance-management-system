@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { apiFetch } from './api';
 
-export default function Auth({ onLoginSuccess }) {
+export default function Auth({ onLoginSuccess, theme, onToggleTheme }) {
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', is_admin: false });
   const [error, setError] = useState('');
@@ -49,9 +49,25 @@ export default function Auth({ onLoginSuccess }) {
 
   return (
     <div style={styles.authContainer} className="fade-in">
-      {/* Background glowing blobs */}
-      <div style={styles.glowBlob1}></div>
-      <div style={styles.glowBlob2}></div>
+      <div className="gov-top-bar" style={{ position: 'absolute', top: 0, left: 0, right: 0, width: '100%', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span className="gov-flag-icon">🇮🇳</span>
+          <span>National Grievance Portal | Government of India • Official Secure Site</span>
+        </div>
+        <button onClick={onToggleTheme} style={{ background: 'none', border: 'none', color: '#e2e8f0', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, padding: 0 }}>
+          {theme === 'light' ? (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+              <span>Dark Mode</span>
+            </>
+          ) : (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              <span>Light Mode</span>
+            </>
+          )}
+        </button>
+      </div>
 
       <div className="glass-panel-glow" style={styles.authCard}>
         {/* Brand Logo and Title */}
@@ -63,8 +79,8 @@ export default function Auth({ onLoginSuccess }) {
               <path d="M12 16h.01" />
             </svg>
           </div>
-          <h1 style={styles.brandTitle}>GrievanceFlow <span style={styles.aiTag}>AI</span></h1>
-          <p style={styles.brandSubtitle}>Intelligent Resolution & Tracking System</p>
+          <h1 style={styles.brandTitle}>Lok Nivaran Portal</h1>
+          <p style={styles.brandSubtitle}>Dept of Administrative Reforms & Public Grievances</p>
         </div>
 
         {/* Tab Toggle */}
@@ -73,9 +89,10 @@ export default function Auth({ onLoginSuccess }) {
             type="button"
             style={{
               ...styles.tabButton,
-              color: !isRegister ? '#ffffff' : 'var(--text-secondary)',
-              background: !isRegister ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              border: !isRegister ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
+              color: !isRegister ? 'var(--text-primary)' : 'var(--text-muted)',
+              background: !isRegister ? 'var(--bg-surface)' : 'transparent',
+              border: !isRegister ? '1px solid var(--border-color)' : '1px solid transparent',
+              boxShadow: !isRegister ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
             }}
             onClick={() => {
               setIsRegister(false);
@@ -88,9 +105,10 @@ export default function Auth({ onLoginSuccess }) {
             type="button"
             style={{
               ...styles.tabButton,
-              color: isRegister ? '#ffffff' : 'var(--text-secondary)',
-              background: isRegister ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              border: isRegister ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid transparent',
+              color: isRegister ? 'var(--text-primary)' : 'var(--text-muted)',
+              background: isRegister ? 'var(--bg-surface)' : 'transparent',
+              border: isRegister ? '1px solid var(--border-color)' : '1px solid transparent',
+              boxShadow: isRegister ? '0 1px 3px rgba(0, 0, 0, 0.08)' : 'none',
             }}
             onClick={() => {
               setIsRegister(true);
@@ -247,34 +265,15 @@ export default function Auth({ onLoginSuccess }) {
 const styles = {
   authContainer: {
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
     width: '100%',
-    padding: '24px',
     boxSizing: 'border-box',
     position: 'relative',
     overflow: 'hidden',
-  },
-  glowBlob1: {
-    position: 'absolute',
-    top: '15%',
-    left: '10%',
-    width: '350px',
-    height: '350px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(0,0,0,0) 70%)',
-    zIndex: -1,
-  },
-  glowBlob2: {
-    position: 'absolute',
-    bottom: '15%',
-    right: '10%',
-    width: '400px',
-    height: '400px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(0,0,0,0) 70%)',
-    zIndex: -1,
+    background: 'var(--bg-base)',
   },
   authCard: {
     width: '100%',
@@ -282,6 +281,10 @@ const styles = {
     padding: '40px',
     boxSizing: 'border-box',
     position: 'relative',
+    background: 'var(--bg-surface)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
   },
   brandHeader: {
     textAlign: 'center',
@@ -294,9 +297,9 @@ const styles = {
     width: '52px',
     height: '52px',
     borderRadius: '12px',
-    background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+    background: 'var(--primary)',
     color: '#ffffff',
-    boxShadow: '0 8px 24px rgba(139, 92, 246, 0.3)',
+    boxShadow: '0 4px 12px var(--primary-glow)',
     marginBottom: '16px',
   },
   brandTitle: {
@@ -304,12 +307,7 @@ const styles = {
     fontWeight: '700',
     margin: '0 0 6px 0',
     letterSpacing: '-0.03em',
-  },
-  aiTag: {
-    color: 'var(--secondary)',
-    fontSize: '24px',
-    fontWeight: '800',
-    textShadow: '0 0 10px rgba(6, 182, 212, 0.4)',
+    color: 'var(--text-primary)',
   },
   brandSubtitle: {
     margin: 0,
@@ -319,11 +317,11 @@ const styles = {
   },
   tabContainer: {
     display: 'flex',
-    background: 'rgba(0, 0, 0, 0.2)',
+    background: 'rgba(15, 23, 42, 0.06)',
     padding: '4px',
-    borderRadius: '12px',
+    borderRadius: '8px',
     marginBottom: '28px',
-    border: '1px solid rgba(255,255,255,0.05)',
+    border: '1px solid var(--border-color)',
   },
   tabButton: {
     flex: 1,
@@ -388,11 +386,11 @@ const styles = {
     position: 'relative',
     height: '18px',
     width: '18px',
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'var(--bg-surface)',
     border: '1px solid var(--border-color)',
     borderRadius: '4px',
     transition: 'all 0.2s',
-    marginTop: '2px',
+    margin: '2px',
     flexShrink: 0,
     '&::after': {
       content: '""',
