@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: grievance-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        value: gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+      - key: DB_PORT
+        value: 4000
+      - key: DB_USER
+        value: 2mVAybBkQ5sXjC2.root
+      - key: DB_PASS
+        value: v1nPDYAte2Dn2ZC6
+      - key: DB_NAME
+        value: grievance_db
+      - key: JWT_SECRET
+        value: super_secret_jwt_key_12345
+      - key: OPENAI_API_KEY
+        value: your_openai_api_key_here
