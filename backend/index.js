@@ -393,13 +393,14 @@ app.get('/api/feedbacks', authenticateToken, requireAdmin, async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
+
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`Server running on port ${PORT}`);
+
   try {
     await db.query('SELECT 1');
     console.log('Connected to TiDB MySQL database successfully!');
 
-    // Auto-create feedbacks table
     await db.query(`
       CREATE TABLE IF NOT EXISTS feedbacks (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -411,6 +412,7 @@ app.listen(PORT, async () => {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+
     console.log('Database feedbacks table checked/created successfully.');
   } catch (error) {
     console.error('Database connection failed:', error.message);
